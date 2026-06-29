@@ -17,6 +17,12 @@ Open this repo in Claude Code. The session initialises automatically:
 
 From there, ask naturally. The supervisor routes to the right agent.
 
+### Slash commands
+
+| Command | What it does |
+|---------|-------------|
+| `/new-event` | Resets `event-context.md` to blank template and launches `session-init` — use to start a fresh event without leaving the session |
+
 ---
 
 ## Agents
@@ -50,6 +56,7 @@ Jump to any step — flow is a guide, not a requirement.
 .
 ├── .claude/
 │   ├── agents/               # 7 event planning agent definitions
+│   ├── commands/             # Slash commands (e.g. /new-event)
 │   └── settings.json         # SessionStart hook + plugins config
 ├── drafts/                   # Generated per-session (gitignored)
 ├── doc-content/              # JSON doc specs per-session (gitignored)

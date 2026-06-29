@@ -1,1 +1,8 @@
 COMMANDS.md
+
+# Session event data — not shared, populated each session
+drafts/*
+!drafts/.gitkeep
+doc-content/*
+!doc-content/.gitkeep
+

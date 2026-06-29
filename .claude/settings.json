@@ -3,13 +3,16 @@
     "context-mode@context-mode": true,
     "caveman@caveman": true
   },
+  "companyAnnouncements": [
+    "AGEVP — Multiagent Event Planner | Agents: venue-scout · budget-validator · event-planner · email-drafter · doc-generator | Type your task or ask to continue the current event."
+  ],
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "printf 'AGEVP EVENT INIT: Lire event-context.md. Si vide/template → lancer session-init immédiatement. Si renseigné → demander: continuer ou nouveau événement?'"
+            "command": "bash .claude/hooks/session-preview.sh && printf 'AGEVP EVENT INIT: Lire event-context.md. Si vide/template → lancer session-init immédiatement. Si renseigné → demander: continuer ou nouveau événement?'"
           }
         ]
       }

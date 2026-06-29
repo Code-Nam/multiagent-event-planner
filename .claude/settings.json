@@ -2,5 +2,17 @@
   "enabledPlugins": {
     "context-mode@context-mode": true,
     "caveman@caveman": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf 'AGEVP EVENT INIT: Lire event-context.md. Si vide/template → lancer session-init immédiatement. Si renseigné → demander: continuer ou nouveau événement?'"
+          }
+        ]
+      }
+    ]
   }
 }

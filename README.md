@@ -2,7 +2,7 @@
 
 Claude Code workspace for planning events at [AGEVP](https://www.agevp.com/wordpress/fr/accueil/qui-sommes-nous/) — Association Générale des Étudiants Vietnamiens de Paris.
 
-Each Claude Code session = one event project. A supervisor orchestrates 7 specialised agents that handle venue search, budget validation, operational planning, email drafting, and document generation.
+Each Claude Code session = one event project. A supervisor orchestrates 9 specialised agents that handle venue search, budget validation, operational planning, email drafting, document generation, and config auditing.
 
 ---
 
@@ -21,7 +21,16 @@ From there, ask naturally. The supervisor routes to the right agent.
 
 | Command | What it does |
 |---------|-------------|
-| `/new-event` | Resets `event-context.md` to blank template and launches `session-init` — use to start a fresh event without leaving the session |
+| `/new-event` | Reset `event-context.md` to blank template and launch `session-init` |
+| `/plan-status` | Show current planning progress — ✅/⬜ per pipeline step |
+| `/full-pipeline` | Run full pipeline sequentially: venue-scout → compile → validate → plan |
+| `/venue-pipeline` | Run venue phase only: scout → compile → validate |
+| `/email-venue` | Draft venue inquiry email auto-filled from compiled drafts |
+| `/budget-override` | Confirm and relay budget override after 🔴 rejection |
+| `/event-recap` | Single-page French briefing synthesised from all drafts |
+| `/export` | Generate xlsx/docx/ppt JSON specs via doc-generator |
+| `/claude-review` | Audit all Claude config files — prioritised improvement plan |
+| `/sync-docs` | Sync README, CLAUDE.md, settings to current agents and skills |
 
 ---
 
@@ -36,6 +45,8 @@ From there, ask naturally. The supervisor routes to the right agent.
 | `event-planner` | Tasks, materials, timeline, contacts | `drafts/planning-*.md` |
 | `email-drafter` | Draft professional emails in French (no send) | `drafts/<purpose>-*.md` |
 | `doc-generator` | JSON content specs for xlsx/docx/ppt | `doc-content/*.json` |
+| `claude-reviewer` | Read-only config audit — prioritised improvement plan | conversation only |
+| `doc-updater` | Sync README, CLAUDE.md, settings to current config | in-place edits |
 
 ### Full planning flow
 
@@ -55,8 +66,8 @@ Jump to any step — flow is a guide, not a requirement.
 ```
 .
 ├── .claude/
-│   ├── agents/               # 7 event planning agent definitions
-│   ├── commands/             # Slash commands (e.g. /new-event)
+│   ├── agents/               # 9 event planning agent definitions
+│   ├── skills/               # Slash commands (e.g. /plan-status, /claude-review)
 │   └── settings.json         # SessionStart hook + plugins config
 ├── drafts/                   # Generated per-session (gitignored)
 ├── doc-content/              # JSON doc specs per-session (gitignored)
@@ -72,7 +83,7 @@ Jump to any step — flow is a guide, not a requirement.
 
 | Phase | Status | Scope |
 |-------|--------|-------|
-| **1 — Agents** | ✅ Done | 7 agents, session init, supervisor routing |
+| **1 — Agents** | ✅ Done | 9 agents, 9 skills, session init, supervisor routing |
 | **2 — Scripts** | Planned | Python mail sender (Gmail API), doc generator (openpyxl / python-docx), Google Drive MCP |
 | **3 — Web app** | Planned | API + frontend |
 

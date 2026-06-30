@@ -35,11 +35,9 @@ describe('useApi — get()', () => {
     mockFetch.mockResolvedValueOnce(makeResponse(404, { message: 'Not found' }))
 
     const { get } = useApi()
-    await expect(get('/api/event')).rejects.toThrow(ApiError)
-    await expect(get('/api/event')).rejects.toMatchObject({
-      message: 'Not found',
-      code: 404,
-    })
+    const err = await get('/api/event').catch((e: unknown) => e)
+    expect(err).toBeInstanceOf(ApiError)
+    expect(err).toMatchObject({ message: 'Not found', code: 404 })
   })
 
   it('throws ApiError on non-2xx with statusText when body has no message', async () => {

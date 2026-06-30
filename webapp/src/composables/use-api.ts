@@ -15,9 +15,9 @@ export function useApi() {
     const res = await fetch(`${base}${path}`)
     if (!res.ok) {
       const body = await res.json().catch(() => ({ message: res.statusText }))
-      throw new ApiError(body.message ?? res.statusText, res.status)
+      throw new ApiError(body.message || res.statusText, res.status)
     }
-    return res.json() as Promise<T>
+    return res.json().catch((e: Error) => { throw new ApiError(e.message, res.status) }) as Promise<T>
   }
 
   async function post<T>(path: string, body: unknown): Promise<T> {
@@ -28,9 +28,9 @@ export function useApi() {
     })
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({ message: res.statusText }))
-      throw new ApiError(errBody.message ?? res.statusText, res.status)
+      throw new ApiError(errBody.message || res.statusText, res.status)
     }
-    return res.json() as Promise<T>
+    return res.json().catch((e: Error) => { throw new ApiError(e.message, res.status) }) as Promise<T>
   }
 
   return { get, post }

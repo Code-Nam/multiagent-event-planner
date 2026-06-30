@@ -6,6 +6,7 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:ui": "vitest --ui",
     "lint": "eslint . --ext .vue,.ts"
   },
   "dependencies": {
@@ -22,6 +23,8 @@
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0",
     "vitest": "^1.0.0",
-    "@vue/test-utils": "^2.4.0"
+    "@vue/test-utils": "^2.4.0",
+    "@vitest/ui": "^1.0.0",
+    "jsdom": "^24.0.0"
   }
 }

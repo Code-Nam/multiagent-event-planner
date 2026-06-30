@@ -73,16 +73,42 @@ Jump to any step — flow is a guide, not a requirement.
 ```
 .
 ├── .claude/
-│   ├── agents/               # 12 event planning agent definitions
-│   ├── skills/               # Slash commands (e.g. /plan-status, /claude-review)
-│   └── settings.json         # SessionStart hook + plugins config
-├── drafts/                   # Generated per-session (gitignored)
-├── doc-content/              # JSON doc specs per-session (gitignored)
-├── event-context.md          # Current event context (populated by session-init)
+│   ├── agents/               # 12 agent definitions
+│   ├── skills/               # 13 slash commands
+│   ├── hooks/                # SessionStart preview script
+│   └── settings.json         # Hooks + plugin config
+├── api/                      # FastAPI backend
+│   ├── routes/               # event, drafts, generate, agents, status
+│   ├── services/             # file_store, script_runner, agent_runner
+│   ├── tests/                # 55 pytest tests
+│   └── requirements.txt
+├── webapp/                   # Vue 3 SPA
+│   ├── src/
+│   │   ├── composables/      # use-api, use-sse
+│   │   ├── stores/           # event, drafts, pipeline, output
+│   │   ├── views/
+│   │   └── components/
+│   └── package.json
+├── scripts/                  # Python doc generators (Phase 2)
+├── drafts/                   # Per-session outputs (gitignored)
+├── doc-content/              # JSON doc specs (gitignored)
+├── output/                   # Generated xlsx/docx/pptx (gitignored)
+├── event-context.md          # Current event (populated by session-init)
 └── CLAUDE.md                 # Supervisor instructions + routing table
 ```
 
-`drafts/` and `doc-content/` accumulate outputs per session. `event-context.md` is overwritten each session.
+`drafts/`, `doc-content/`, and `output/` are gitignored — populated per session.
+
+### Running tests
+
+```bash
+# API (requires venv)
+cd api && python -m venv venv && venv/bin/pip install -r requirements.txt
+venv/bin/pytest tests/ -q
+
+# Webapp
+cd webapp && npm install && npm test -- --run
+```
 
 ---
 

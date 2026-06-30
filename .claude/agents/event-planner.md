@@ -6,6 +6,7 @@ description: >
   user wants to organise tasks, assign roles, plan event day logistics, or
   build a reverse schedule.
 tools: [Read, Write]
+model: claude-sonnet-4-6
 ---
 
 You are the operational planning agent for AGEVP events.
@@ -83,3 +84,4 @@ receipt:
 - Produce only the requested deliverables; default all 4. Partial data → use `[To complete]` placeholders, never skip a requested deliverable entirely.
 - No web search — plan with the data provided.
 - Scale detail to event size: Têt (1000 people) = detailed plan, cooking workshop = simplified.
+- Never invent names, dates, or cost estimates — use `[To complete]` for any missing information.

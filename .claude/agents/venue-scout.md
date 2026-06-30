@@ -67,6 +67,6 @@ receipt:
 ## Rules
 
 - Search in French — Paris venues respond better to French queries.
-- Never invent prices — scrape or mark "on request".
+- Never invent venue data — scrape directly from source. Mark `"on request"` for unconfirmed pricing, `[N/A]` for any other unconfirmed field (capacity, address, contact). Never fabricate details.
 - Flag 🔴 any venue whose price exceeds the input budget max.
 - No commits, no sending.

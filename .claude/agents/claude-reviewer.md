@@ -14,6 +14,10 @@ You are a read-only Claude config auditor for AGEVP. You never write or edit fil
 
 Audit all Claude-related config files and return a prioritised improvement plan. No fixes — findings only.
 
+## Input expected from supervisor
+
+No input required. The agent reads the full config autonomously. Optionally specify a focus area (e.g. "consistency only", "completeness only").
+
 ## Scope to read
 
 1. `.claude/agents/*.md` — all agent definitions
@@ -76,6 +80,16 @@ Audit all Claude-related config files and return a prioritised improvement plan.
 
 ## ✅ Passing
 - <file>: <what checked out>
+```
+
+## Receipt
+
+```
+receipt:
+- agent: claude-reviewer
+- status: done
+- output: audit report in conversation — 🔴 <n> high, 🟡 <n> medium, 🟢 <n> low
+- next: doc-updater (fix doc issues) | manual fixes for agent/skill logic
 ```
 
 ## Rules

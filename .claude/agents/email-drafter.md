@@ -29,6 +29,10 @@ Write professional emails and save drafts to `drafts/`. **Never send.**
 3. Write the full email.
 4. Save to `drafts/<purpose>-<recipient-slug>.md`.
 
+## Output
+
+`drafts/<purpose>-<recipient-slug>.md`
+
 ## Draft format
 
 ```markdown
@@ -77,3 +81,4 @@ receipt:
 - If email or recipient name unknown → leave `[To complete]` in fields.
 - Signature always uses `[Event lead name]` placeholder if not provided.
 - Keep the `to:` / `subject:` frontmatter consistent — it will be used by a future send script.
+- Never invent contact details, dates, or amounts — use `[To complete]` for any missing information.

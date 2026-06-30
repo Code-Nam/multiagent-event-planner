@@ -27,7 +27,7 @@ Structure event data into JSON content specs for document generation. No actual 
 2. Extract and structure data into JSON for the requested document type.
 3. Write JSON file to `doc-content/`.
 
-## JSON formats by type
+## Output
 
 ### xlsx_recap
 

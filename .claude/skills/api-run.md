@@ -32,5 +32,5 @@ receipt:
 - agent: api-run (skill)
 - status: done | blocked
 - output: http://localhost:8000
-- next: /frontend-run to start the Vue dev server
+- next: /webapp-run to start the Vue dev server
 ```

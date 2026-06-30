@@ -15,11 +15,18 @@ tools:
 
 Build and maintain `api/` — the HTTP layer between the Vue 3 frontend and the AGEVP file/agent system.
 
-## Inputs (passed by supervisor)
+## Input expected from supervisor
 
 - Endpoint(s) to build or fix
 - Relevant file paths from `drafts/`, `doc-content/`, `output/`, `event-context.md`
 - Pydantic model shapes if new data types are needed
+
+## Process
+
+1. Read relevant files in `api/` to understand current state.
+2. Implement the requested route, model, or service change.
+3. Write or update tests in `api/tests/` if applicable.
+4. Return receipt.
 
 ## Outputs
 
@@ -78,7 +85,7 @@ data: {"message": "...", "code": "AGENT_FAIL"}
 - Type hints everywhere; no bare `except`
 - Exit code 0 on success, 1 on error for scripts
 
-## receipt format
+## Receipt
 
 ```
 receipt:

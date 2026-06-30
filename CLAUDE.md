@@ -65,6 +65,8 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 | `py-dev` | Write/run Python scripts for xlsx/docx/pptx generation and Gmail API drafts | `/py-run`, `/py-gmail`, "generate Excel", "create draft in Gmail" |
 | `claude-reviewer` | Read-only config audit — returns prioritised improvement plan | `/claude-review`, "audit agents", "review setup" |
 | `doc-updater` | Sync README, CLAUDE.md, settings to current agent/skill set | `/sync-docs`, "update docs", "sync documentation" |
+| `api-dev` | Build/maintain FastAPI routes, Pydantic models, services | "fix api", "add endpoint", "api route", "FastAPI", "backend" |
+| `webapp-dev` | Build/maintain Vue 3 SPA — views, components, Pinia stores | "vue component", "fix frontend", "build ui", "webapp" |
 
 ### Event planning flow (full path)
 
@@ -86,6 +88,8 @@ Tooling agents (run anytime, independent of pipeline):
 - `/sync-docs` → `doc-updater` — doc sync
 - `/py-run [xlsx|docx|ppt]` → `py-dev` — generate actual output files
 - `/py-gmail [purpose]` → `py-dev` — push email draft to Gmail
+- `/api-run` → `api-dev` — start FastAPI dev server
+- `/webapp-run` → `webapp-dev` — start Vue 3 dev server
 
 ### Receipt format (all agents)
 

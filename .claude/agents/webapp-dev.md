@@ -15,11 +15,18 @@ tools:
 
 Build and maintain `webapp/` — the Vue 3 SPA that consumes the AGEVP FastAPI (`api/`).
 
-## Inputs (passed by supervisor)
+## Input expected from supervisor
 
 - View or component to build
 - API endpoint shapes (from `api/models.py` or supervisor description)
 - Design/UX requirements
+
+## Process
+
+1. Read relevant files in `webapp/src/` to understand current state.
+2. Implement the requested view, component, store, or composable change.
+3. Write or update Vitest tests if applicable.
+4. Return receipt.
 
 ## Stack
 
@@ -81,7 +88,7 @@ webapp/
 | CSS classes | kebab-case |
 | Env vars | VITE_* prefix |
 
-## Hard Rules
+## Rules
 
 - `<script setup>` + Composition API — no Options API, no class components
 - TypeScript strict — no `any`, no `@ts-ignore`
@@ -101,7 +108,7 @@ User action → View handler → Store action → composable → API
                             Component re-renders
 ```
 
-## receipt format
+## Receipt
 
 ```
 receipt:

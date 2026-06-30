@@ -2,7 +2,7 @@
 
 Claude Code workspace for planning events at [AGEVP](https://www.agevp.com/wordpress/fr/accueil/qui-sommes-nous/) — Association Générale des Étudiants Vietnamiens de Paris.
 
-Each Claude Code session = one event project. A supervisor orchestrates 10 specialised agents that handle venue search, budget validation, operational planning, email drafting, document generation, Python script execution, and config auditing.
+Each Claude Code session = one event project. A supervisor orchestrates 12 specialised agents that handle venue search, budget validation, operational planning, email drafting, document generation, Python script execution, and config auditing.
 
 ---
 
@@ -33,6 +33,8 @@ From there, ask naturally. The supervisor routes to the right agent.
 | `/py-gmail` | Push latest email-drafter output to Gmail as an API draft (not sent) |
 | `/claude-review` | Audit all Claude config files — prioritised improvement plan |
 | `/sync-docs` | Sync README, CLAUDE.md, settings to current agents and skills |
+| `/api-run` | Start FastAPI dev server at `http://localhost:8000` |
+| `/webapp-run` | Start Vue 3 dev server at `http://localhost:5173` |
 
 ---
 
@@ -50,6 +52,8 @@ From there, ask naturally. The supervisor routes to the right agent.
 | `claude-reviewer` | Read-only config audit — prioritised improvement plan | conversation only |
 | `doc-updater` | Sync README, CLAUDE.md, settings to current config | in-place edits |
 | `py-dev` | Python coding specialist — writes/runs scripts for document generation and Gmail API draft creation | `output/` files, Gmail draft ID |
+| `api-dev` | Build/maintain FastAPI routes, Pydantic models, services | `api/` files |
+| `webapp-dev` | Build/maintain Vue 3 SPA — views, components, Pinia stores, composables | `webapp/` files |
 
 ### Full planning flow
 
@@ -69,7 +73,7 @@ Jump to any step — flow is a guide, not a requirement.
 ```
 .
 ├── .claude/
-│   ├── agents/               # 10 event planning agent definitions
+│   ├── agents/               # 12 event planning agent definitions
 │   ├── skills/               # Slash commands (e.g. /plan-status, /claude-review)
 │   └── settings.json         # SessionStart hook + plugins config
 ├── drafts/                   # Generated per-session (gitignored)
@@ -86,9 +90,9 @@ Jump to any step — flow is a guide, not a requirement.
 
 | Phase | Status | Scope |
 |-------|--------|-------|
-| **1 — Agents** | ✅ Done | 10 agents, 11 skills, session init, supervisor routing |
+| **1 — Agents** | ✅ Done | 12 agents, 13 skills, session init, supervisor routing |
 | **2 — Scripts** | In progress | Python doc generator (openpyxl / python-docx / python-pptx), Gmail API draft creation |
-| **3 — Web app** | Planned | API + frontend |
+| **3 — Web app** | In progress | FastAPI (`api/`) + Vue 3 SPA (`webapp/`) — agents and tests in place |
 
 ---
 

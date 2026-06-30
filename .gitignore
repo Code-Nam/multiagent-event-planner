@@ -1,3 +1,8 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+node_modules/
 COMMANDS.md
 template.md
 

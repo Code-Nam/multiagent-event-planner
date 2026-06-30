@@ -24,7 +24,7 @@ else
   printf '  Budget : %s\n' "$BUDGET"
   printf '  Lead   : %s\n' "$LEAD"
   printf '%s\n' "$SEP"
-  printf '  venue-scout · info-compiler · budget-validator\n'
-  printf '  event-planner · email-drafter · doc-generator\n'
+  printf '  session-init · venue-scout · info-compiler · budget-validator\n'
+  printf '  event-planner · email-drafter · doc-generator · claude-reviewer · doc-updater\n'
   printf '%s\n\n' "$SEP"
 fi

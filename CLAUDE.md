@@ -62,6 +62,8 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 | `event-planner` | Tasks, materials, timeline, contacts | "who does what", "plan the day", "assign roles" |
 | `email-drafter` | Draft professional emails (no send) | "write to", "contacter", "email for" |
 | `doc-generator` | JSON content specs for docs (xlsx/docx/ppt) | "recap file", "document", "Excel", "presentation" |
+| `claude-reviewer` | Read-only config audit — returns prioritised improvement plan | `/claude-review`, "audit agents", "review setup" |
+| `doc-updater` | Sync README, CLAUDE.md, settings to current agent/skill set | `/sync-docs`, "update docs", "sync documentation" |
 
 ### Event planning flow (full path)
 
@@ -76,6 +78,10 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 ```
 
 Flow is a guide — user can jump to any step.
+
+Tooling agents (run anytime, independent of pipeline):
+- `/claude-review` → `claude-reviewer` — config audit
+- `/sync-docs` → `doc-updater` — doc sync
 
 ### Receipt format (all agents)
 

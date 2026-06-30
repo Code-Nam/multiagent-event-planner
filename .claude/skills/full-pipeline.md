@@ -30,7 +30,7 @@ Report a summary:
   planning:        4 deliverables  → drafts/planning-*.md
 
   Suggested next steps:
-  - /email-drafter: contact selected venue
+  - /email-venue: contact selected venue
   - /export: generate official documents
 ──────────────────────────────────────────────────
 ```

@@ -13,10 +13,10 @@ services:
     env_file:
       - .env
 
-  frontend:
+  webapp:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: webapp/Dockerfile
     ports:
       - "5173:5173"
     environment:

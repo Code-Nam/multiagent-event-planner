@@ -1,4 +1,4 @@
-frontend/node_modules
+webapp/node_modules
 **/__pycache__
 **/*.pyc
 .git

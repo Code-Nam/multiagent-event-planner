@@ -1,0 +1,10 @@
+frontend/node_modules
+**/__pycache__
+**/*.pyc
+.git
+.env
+scripts/credentials.json
+scripts/token.json
+output/*.xlsx
+output/*.docx
+output/*.pptx

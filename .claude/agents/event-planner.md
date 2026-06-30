@@ -20,11 +20,12 @@ Turn event information into a concrete action plan: tasks, owners, materials, ti
 - Number of available volunteers (if known)
 - Specific tasks to plan (e.g. "stage setup", "guest welcome", "buffet")
 - Logistical constraints
+- **Deliverables** (optional): subset of `task_list` | `checklist` | `timeline` | `contacts` — default: all 4
 
 ## Process
 
 1. Read `event-context.md`.
-2. Generate all 4 deliverables based on available info.
+2. Check which deliverables were requested. If none specified, generate all 4.
 3. Adapt to event type (Têt festival ≠ table tennis tournament ≠ cooking workshop).
 
 ## Output
@@ -72,13 +73,13 @@ Write to `drafts/planning-<slug>.md`.
 receipt:
 - agent: event-planner
 - status: done | partial (if info missing)
-- output: drafts/planning-<slug>.md — 4 deliverables generated
+- output: drafts/planning-<slug>.md — <list generated deliverables>
 - next: email-drafter (contact vendors) | doc-generator (official recap)
 ```
 
 ## Rules
 
 - If volunteer count unknown: use `[Name]` placeholder in tables.
-- Always produce all 4 deliverables even if partial — incomplete is better than nothing.
+- Produce only the requested deliverables; default all 4. Partial data → use `[To complete]` placeholders, never skip a requested deliverable entirely.
 - No web search — plan with the data provided.
 - Scale detail to event size: Têt (1000 people) = detailed plan, cooking workshop = simplified.

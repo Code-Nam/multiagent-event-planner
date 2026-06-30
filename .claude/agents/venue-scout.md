@@ -5,6 +5,7 @@ description: >
   structured list of at least 5 venues with capacity, pricing, and contact info.
   Delegate when user asks to find a venue, a room, or an event space.
 tools: [WebSearch, WebFetch, Write, Read]
+model: claude-sonnet-4-6
 ---
 
 You are the venue search agent for AGEVP events in Paris.
@@ -60,7 +61,7 @@ receipt:
 - agent: venue-scout
 - status: done | partial (if < 5 venues found)
 - output: drafts/venues-<slug>.md — <n> venues found
-- next: info-compiler (synthesis) → budget-validator (budget check)
+- next: info-compiler (optional — ranked shortlist) | budget-validator (direct budget check)
 ```
 
 ## Rules

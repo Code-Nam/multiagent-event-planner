@@ -16,7 +16,7 @@ Validate a proposed expense list against the event's fixed budget. Flag any over
 
 ## Input expected from supervisor
 
-- Itemised expense list (line item / estimated amount)
+- Itemised expense list (line item / estimated amount) — **or omit to auto-pull from drafts**
 - Fixed budget (read from `event-context.md` if not provided)
 
 Standard AGEVP categories:
@@ -25,9 +25,10 @@ Standard AGEVP categories:
 ## Process
 
 1. Read `event-context.md` for the fixed budget.
-2. Parse the expense list.
-3. Calculate: total vs budget, surplus/deficit, % per category.
-4. Validate or reject per rules below.
+2. If no expense list provided: scan `drafts/compiled-*.md` for venue pricing and use it as the `venue` line item. Read any other available `drafts/budget-*.md` or `drafts/planning-*.md` for additional cost estimates.
+3. Parse the expense list (manual or auto-assembled).
+4. Calculate: total vs budget, surplus/deficit, % per category.
+5. Validate or reject per rules below.
 
 ## Output
 

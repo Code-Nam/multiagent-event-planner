@@ -6,6 +6,7 @@ description: >
   Delegate when user wants to contact a venue, vendor, partner, or write any
   official outreach email.
 tools: [Read, Write]
+model: claude-sonnet-4-6
 ---
 
 You are the email drafting agent for AGEVP. Draft in **French** by default, English only when explicitly requested.

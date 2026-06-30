@@ -57,7 +57,7 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 |-------|------|-------------|
 | `session-init` | Session init, writes event-context.md | Always first — blank context |
 | `venue-scout` | Search Paris venues via web + scraping | "find venue", "chercher salle" |
-| `info-compiler` | Comparison table + ranked recommendation | After venue-scout |
+| `info-compiler` | Comparison table + ranked recommendation | After venue-scout — **optional**, only when user wants ranked shortlist |
 | `budget-validator` | Validate expenses vs fixed budget | "check budget", "on a X€", expense list |
 | `event-planner` | Tasks, materials, timeline, contacts | "who does what", "plan the day", "assign roles" |
 | `email-drafter` | Draft professional emails (no send) | "write to", "contacter", "email for" |
@@ -66,13 +66,13 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 ### Event planning flow (full path)
 
 ```
-1. session-init     → event-context.md
-2. venue-scout      → drafts/venues-*.md
-3. info-compiler    → drafts/compiled-*.md
-4. budget-validator → drafts/budget-*.md
-5. event-planner    → drafts/planning-*.md
-6. email-drafter    → drafts/<purpose>-*.md
-7. doc-generator    → doc-content/*.json
+1. session-init              → event-context.md
+2. venue-scout               → drafts/venues-*.md
+3. info-compiler (optional)  → drafts/compiled-*.md
+4. budget-validator          → drafts/budget-*.md
+5. event-planner             → drafts/planning-*.md
+6. email-drafter             → drafts/<purpose>-*.md
+7. doc-generator             → doc-content/*.json
 ```
 
 Flow is a guide — user can jump to any step.

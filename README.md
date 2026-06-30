@@ -2,7 +2,7 @@
 
 Claude Code workspace for planning events at [AGEVP](https://www.agevp.com/wordpress/fr/accueil/qui-sommes-nous/) — Association Générale des Étudiants Vietnamiens de Paris.
 
-Each Claude Code session = one event project. A supervisor orchestrates 9 specialised agents that handle venue search, budget validation, operational planning, email drafting, document generation, and config auditing.
+Each Claude Code session = one event project. A supervisor orchestrates 10 specialised agents that handle venue search, budget validation, operational planning, email drafting, document generation, Python script execution, and config auditing.
 
 ---
 
@@ -29,6 +29,8 @@ From there, ask naturally. The supervisor routes to the right agent.
 | `/budget-override` | Confirm and relay budget override after 🔴 rejection |
 | `/event-recap` | Single-page French briefing synthesised from all drafts |
 | `/export` | Generate xlsx/docx/ppt JSON specs via doc-generator |
+| `/py-run` | Run generation scripts against JSON specs in doc-content/ — writes output/ files |
+| `/py-gmail` | Push latest email-drafter output to Gmail as an API draft (not sent) |
 | `/claude-review` | Audit all Claude config files — prioritised improvement plan |
 | `/sync-docs` | Sync README, CLAUDE.md, settings to current agents and skills |
 
@@ -47,6 +49,7 @@ From there, ask naturally. The supervisor routes to the right agent.
 | `doc-generator` | JSON content specs for xlsx/docx/ppt | `doc-content/*.json` |
 | `claude-reviewer` | Read-only config audit — prioritised improvement plan | conversation only |
 | `doc-updater` | Sync README, CLAUDE.md, settings to current config | in-place edits |
+| `py-dev` | Python coding specialist — writes/runs scripts for document generation and Gmail API draft creation | `output/` files, Gmail draft ID |
 
 ### Full planning flow
 
@@ -66,7 +69,7 @@ Jump to any step — flow is a guide, not a requirement.
 ```
 .
 ├── .claude/
-│   ├── agents/               # 9 event planning agent definitions
+│   ├── agents/               # 10 event planning agent definitions
 │   ├── skills/               # Slash commands (e.g. /plan-status, /claude-review)
 │   └── settings.json         # SessionStart hook + plugins config
 ├── drafts/                   # Generated per-session (gitignored)
@@ -83,8 +86,8 @@ Jump to any step — flow is a guide, not a requirement.
 
 | Phase | Status | Scope |
 |-------|--------|-------|
-| **1 — Agents** | ✅ Done | 9 agents, 9 skills, session init, supervisor routing |
-| **2 — Scripts** | Planned | Python mail sender (Gmail API), doc generator (openpyxl / python-docx), Google Drive MCP |
+| **1 — Agents** | ✅ Done | 10 agents, 11 skills, session init, supervisor routing |
+| **2 — Scripts** | In progress | Python doc generator (openpyxl / python-docx / python-pptx), Gmail API draft creation |
 | **3 — Web app** | Planned | API + frontend |
 
 ---

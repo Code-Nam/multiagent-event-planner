@@ -5,15 +5,17 @@ Reads a JSON spec file (xlsx_recap shape) and produces an .xlsx workbook
 with one worksheet per sheet entry, bold header row, and auto-fitted
 column widths. Output filename is derived from the input spec filename stem.
 
-If templates/recap.xlsx exists it is loaded as a style base (branding,
-colors, fonts). Pass --template to override the template path explicitly.
+The branded template (Modele_AGEVP_Suivi.xlsx) is duplicated as a style base:
+the header row's font/fill/alignment are lifted onto each generated sheet's
+header. Because a recap holds arbitrarily many sheets with varying columns,
+this format stays table-driven rather than {{TOKEN}}-driven. Pass --template
+to override the template path explicitly.
 
 Usage:
     python scripts/generate_xlsx.py <json-spec-path> [--template <path>] [--output <dir>]
 """
 
 import sys
-import json
 import argparse
 from copy import copy as _copy
 from pathlib import Path
@@ -24,6 +26,8 @@ try:
 except ImportError:
     print("Missing dependency. Run: pip install -r scripts/requirements.txt", file=sys.stderr)
     sys.exit(1)
+
+from token_fill import load_spec
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 DEFAULT_TEMPLATE = TEMPLATES_DIR / "Modele_AGEVP_Suivi.xlsx"
@@ -92,25 +96,7 @@ def generate_xlsx(spec_path: Path, output_dir: Path, template: Path | None = Non
     Raises:
         SystemExit: on any I/O or validation error.
     """
-    try:
-        raw = spec_path.read_text(encoding="utf-8")
-    except OSError as exc:
-        print(f"ERROR: cannot read {spec_path}: {exc}", file=sys.stderr)
-        sys.exit(1)
-
-    try:
-        spec = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        print(f"ERROR: invalid JSON in {spec_path}: {exc}", file=sys.stderr)
-        sys.exit(1)
-
-    if spec.get("type") != "xlsx_recap":
-        print(
-            f"ERROR: expected type 'xlsx_recap', got '{spec.get('type')}'",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
+    spec = load_spec(spec_path, "xlsx_recap")
     sheets: list = spec.get("sheets", [])
 
     if not sheets:

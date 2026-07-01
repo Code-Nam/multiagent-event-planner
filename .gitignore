@@ -15,6 +15,10 @@ scripts/credentials*.json
 scripts/client_secret*.json
 scripts/token*.json
 scripts/gdrive_service_account.json
+scripts/gdrive_token.json
+
+# Template backups written by scripts/tokenize_templates.py
+templates/*.bak
 
 # Session event data — not shared, populated each session
 drafts/*

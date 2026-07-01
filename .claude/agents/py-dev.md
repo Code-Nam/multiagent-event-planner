@@ -35,8 +35,8 @@ Write, maintain, and execute Python scripts for Phase 2: document generation (xl
 2. Check if requested script(s) exist in `scripts/` — write any that are missing (see Rules for spec).
 3. `mkdir -p output` if not present.
 4. Run: `python scripts/generate_<type>.py <json-spec-path> [--template templates/<file>]`
-   - Template is auto-detected from `templates/` if present; pass `--template` only when overriding.
-   - If `templates/` is empty, run `python scripts/create_templates.py` first to generate blank starters.
+   - The branded template is auto-detected from `templates/` (docx→`Modele_AGEVP.docx`, ppt→`Modele_AGEVP_Presentation.pptx`, xlsx→`Modele_AGEVP_Suivi.xlsx`); pass `--template` only when overriding.
+   - docx/ppt fill `{{TOKEN}}` placeholders. If a generator warns the template is not tokenized (docx falls back to a plain doc; ppt errors out), run `python scripts/tokenize_templates.py` once to inject the tokens, then re-run.
 5. Verify output file created. Report path.
 
 ### Gmail draft path
@@ -83,25 +83,27 @@ google-api-python-client>=2.0
 - `try/except` around file I/O and API calls with meaningful stderr messages
 - Exit code `0` on success, `1` on error
 
-### templates/ folder
+### templates/ folder (branded, token-based)
 
-- `templates/recap.xlsx` — Excel style base (colors, header row format)
-- `templates/report.docx` — Word style base (Heading 1/2 fonts and colors)
-- `templates/presentation.pptx` — PowerPoint theme/master base (no slides)
+The three branded AGEVP templates are versioned and carry `{{TOKEN}}` markers:
 
-Run `python scripts/create_templates.py` to generate blank starters. User edits these in LibreOffice / Word / PowerPoint to apply branding. Scripts auto-detect and load them; use `--template <path>` to override.
+- `templates/Modele_AGEVP_Suivi.xlsx` — Excel style base (title band, coloured header row)
+- `templates/Modele_AGEVP.docx` — Word report: `{{DOC_TITLE}}` `{{DOC_SUBTITLE}}` cover; `{{SEC_NUM}}` `{{SEC_TITLE}}` `{{SEC_BODY}}` cloned per section
+- `templates/Modele_AGEVP_Presentation.pptx` — deck: `{{PRES_TITLE}}` `{{PRES_SUBTITLE}}` `{{PRES_DATE}}` cover; `{{SLIDE_TITLE}}` `{{POINT1..3}}` `{{POINT1..3_DESC}}` cloned content slide
+
+`scripts/token_fill.py` is the shared engine (run-level substitution, unknown tokens blanked). `scripts/tokenize_templates.py` injects the markers into the branded templates in place (idempotent, keeps a `.bak`) — run it once after re-branding a template in Word/LibreOffice. Use `--template <path>` to override the default per format.
 
 ### generate_xlsx.py spec
 
-Accepts one positional arg (JSON spec path) and optional `--template`, `--output`. Reads `sheets[]`. Loads template or creates blank workbook: bold header row, auto-column width per sheet. Writes `output/<spec_stem>.xlsx`.
+Accepts one positional arg (JSON spec path) and optional `--template`, `--output`. Duplicates the template, lifts its header font/fill/alignment, then builds one sheet per `sheets[]` (bold header row, auto column width). Stays table-driven — recaps hold arbitrary multi-column sheets that don't map to fixed tokens. Writes `output/<spec_stem>.xlsx`.
 
 ### generate_docx.py spec
 
-Accepts one positional arg and optional `--template`, `--output`. Loads template (clearing body) or creates blank Document. `Heading 1` title, `Heading 2` per `sections[].heading`, paragraph per `sections[].content`. Writes `output/<spec_stem>.docx`.
+Accepts one positional arg and optional `--template`, `--output`. Duplicates the branded template, fills cover tokens, and clones the `{{SEC_TITLE}}`/`{{SEC_BODY}}` block once per `sections[]` entry (`{{SEC_NUM}}` gets the 1-based index), keeping the footer. Falls back to a plain `Heading 1`/`Heading 2` document if the template lacks tokens. Writes `output/<spec_stem>.docx`.
 
 ### generate_ppt.py spec
 
-Accepts one positional arg and optional `--template`, `--output`. Loads template (removing slides) or creates blank Presentation. One slide per `slides[]` (title + bullet layout). Writes `output/<spec_stem>.pptx`.
+Accepts one positional arg and optional `--template`, `--output`. Finds the cover (`{{PRES_TITLE}}`) and content (`{{POINT1}}`) template slides by token, clones the cover once and the content slide once per group of 3 bullets from `slides[]`, then removes the originals. Errors out if the template is not tokenized. Writes `output/<spec_stem>.pptx`.
 
 ### gmail_draft.py spec
 

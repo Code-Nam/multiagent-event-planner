@@ -34,7 +34,9 @@ Write, maintain, and execute Python scripts for Phase 2: document generation (xl
 1. Check `scripts/requirements.txt` — write if missing (see Rules).
 2. Check if requested script(s) exist in `scripts/` — write any that are missing (see Rules for spec).
 3. `mkdir -p output` if not present.
-4. Run: `python scripts/generate_<type>.py <json-spec-path>`
+4. Run: `python scripts/generate_<type>.py <json-spec-path> [--template templates/<file>]`
+   - Template is auto-detected from `templates/` if present; pass `--template` only when overriding.
+   - If `templates/` is empty, run `python scripts/create_templates.py` first to generate blank starters.
 5. Verify output file created. Report path.
 
 ### Gmail draft path
@@ -81,17 +83,25 @@ google-api-python-client>=2.0
 - `try/except` around file I/O and API calls with meaningful stderr messages
 - Exit code `0` on success, `1` on error
 
+### templates/ folder
+
+- `templates/recap.xlsx` — Excel style base (colors, header row format)
+- `templates/report.docx` — Word style base (Heading 1/2 fonts and colors)
+- `templates/presentation.pptx` — PowerPoint theme/master base (no slides)
+
+Run `python scripts/create_templates.py` to generate blank starters. User edits these in LibreOffice / Word / PowerPoint to apply branding. Scripts auto-detect and load them; use `--template <path>` to override.
+
 ### generate_xlsx.py spec
 
-Accepts one arg (JSON spec path). Reads `sheets[]`. Creates workbook: bold header row, auto-column width per sheet. Writes `output/<title_slug>.xlsx`.
+Accepts one positional arg (JSON spec path) and optional `--template`, `--output`. Reads `sheets[]`. Loads template or creates blank workbook: bold header row, auto-column width per sheet. Writes `output/<spec_stem>.xlsx`.
 
 ### generate_docx.py spec
 
-Accepts one arg. Creates .docx: `Heading 1` per `sections[].heading`, paragraph per `sections[].content`. Writes `output/<title_slug>.docx`.
+Accepts one positional arg and optional `--template`, `--output`. Loads template (clearing body) or creates blank Document. `Heading 1` title, `Heading 2` per `sections[].heading`, paragraph per `sections[].content`. Writes `output/<spec_stem>.docx`.
 
 ### generate_ppt.py spec
 
-Accepts one arg. Creates .pptx: one slide per `slides[]` (title + bullet layout). Writes `output/<title_slug>.pptx`.
+Accepts one positional arg and optional `--template`, `--output`. Loads template (removing slides) or creates blank Presentation. One slide per `slides[]` (title + bullet layout). Writes `output/<spec_stem>.pptx`.
 
 ### gmail_draft.py spec
 

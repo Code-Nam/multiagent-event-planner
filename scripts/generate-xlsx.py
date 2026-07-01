@@ -5,8 +5,11 @@ Reads a JSON spec file (xlsx_recap shape) and produces an .xlsx workbook
 with one worksheet per sheet entry, bold header row, and auto-fitted
 column widths.
 
+If templates/recap.xlsx exists it is loaded as a style base (branding,
+colors, fonts). Pass --template to override the template path explicitly.
+
 Usage:
-    python scripts/generate-xlsx.py [--input doc-content/recap.json] [--output output/]
+    python scripts/generate-xlsx.py [--input doc-content/recap.json] [--template <path>] [--output output/]
 """
 
 import sys
@@ -21,10 +24,24 @@ except ImportError:
     print("Missing dependency. Run: pip install -r scripts/requirements.txt", file=sys.stderr)
     sys.exit(1)
 
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+DEFAULT_TEMPLATE = TEMPLATES_DIR / "recap.xlsx"
+
 
 def slugify(title: str) -> str:
     """Convert a title string to a lowercase underscore slug."""
     return title.lower().replace(" ", "_")
+
+
+def _base_workbook(template: Path | None) -> openpyxl.Workbook:
+    if template and template.exists():
+        wb = openpyxl.load_workbook(template)
+        for name in list(wb.sheetnames):
+            del wb[name]
+        return wb
+    wb = openpyxl.Workbook()
+    wb.remove(wb.active)
+    return wb
 
 
 def auto_fit_columns(ws: openpyxl.worksheet.worksheet.Worksheet) -> None:
@@ -42,7 +59,7 @@ def auto_fit_columns(ws: openpyxl.worksheet.worksheet.Worksheet) -> None:
         ws.column_dimensions[col_letter].width = min(max_len + 4, 60)
 
 
-def generate_xlsx(spec_path: Path, output_dir: Path) -> Path:
+def generate_xlsx(spec_path: Path, output_dir: Path, template: Path | None = None) -> Path:
     """
     Build an .xlsx workbook from an xlsx_recap JSON spec.
 
@@ -82,8 +99,8 @@ def generate_xlsx(spec_path: Path, output_dir: Path) -> Path:
         print("ERROR: spec contains no sheets", file=sys.stderr)
         sys.exit(1)
 
-    wb = openpyxl.Workbook()
-    wb.remove(wb.active)  # remove default empty sheet
+    resolved_template = template if template is not None else DEFAULT_TEMPLATE
+    wb = _base_workbook(resolved_template)
 
     bold_font = Font(bold=True)
 
@@ -126,6 +143,11 @@ if __name__ == "__main__":
         help="Path to the JSON spec file (default: doc-content/recap.json)",
     )
     parser.add_argument(
+        "--template",
+        default=None,
+        help=f"Path to an .xlsx template for branding (default: {DEFAULT_TEMPLATE})",
+    )
+    parser.add_argument(
         "--output",
         default="output",
         help="Output directory (default: output/)",
@@ -135,6 +157,7 @@ if __name__ == "__main__":
     result = generate_xlsx(
         spec_path=Path(args.input),
         output_dir=Path(args.output),
+        template=Path(args.template) if args.template else None,
     )
     print(result)
     sys.exit(0)

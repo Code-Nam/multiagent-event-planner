@@ -6,8 +6,11 @@ presentation. The first slide uses the title-slide layout; subsequent
 slides use a title-and-content layout with bullet points.
 Output filename is derived from the input spec filename stem.
 
+If templates/presentation.pptx exists it is loaded as a theme base
+(slide master, layouts, branding). Pass --template to override explicitly.
+
 Usage:
-    python scripts/generate_ppt.py <json-spec-path>
+    python scripts/generate_ppt.py <json-spec-path> [--template <path>] [--output <dir>]
 """
 
 import sys
@@ -21,6 +24,9 @@ try:
 except ImportError:
     print("Missing dependency. Run: pip install -r scripts/requirements.txt", file=sys.stderr)
     sys.exit(1)
+
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+DEFAULT_TEMPLATE = TEMPLATES_DIR / "presentation.pptx"
 
 
 def _get_layout(prs: Presentation, preferred_index: int, fallback_index: int) -> object:
@@ -36,13 +42,26 @@ def _get_layout(prs: Presentation, preferred_index: int, fallback_index: int) ->
     return layouts[0]
 
 
-def generate_ppt(spec_path: Path, output_dir: Path) -> Path:
+def _base_presentation(template: Path | None) -> Presentation:
+    if template and template.exists():
+        prs = Presentation(str(template))
+        # Remove any slides carried over from the template
+        xml_slides = prs.slides._sldIdLst
+        for slide_id in list(xml_slides):
+            xml_slides.remove(slide_id)
+        return prs
+    return Presentation()
+
+
+def generate_ppt(spec_path: Path, output_dir: Path, template: Path | None = None) -> Path:
     """
     Build a .pptx presentation from a ppt_presentation JSON spec.
 
     Args:
         spec_path:  Path to the JSON spec file.
         output_dir: Directory where the .pptx file will be written.
+        template:   Optional path to a .pptx template for branding.
+                    Defaults to templates/presentation.pptx when present.
 
     Returns:
         Absolute path of the created .pptx file.
@@ -72,7 +91,8 @@ def generate_ppt(spec_path: Path, output_dir: Path) -> Path:
     title: str = spec.get("title", "Presentation")
     slides: list = spec.get("slides", [])
 
-    prs = Presentation()
+    resolved_template = template if template is not None else DEFAULT_TEMPLATE
+    prs = _base_presentation(resolved_template)
 
     # Slide layout indices for the default Office Theme:
     #   0 = Title Slide, 1 = Title and Content
@@ -123,6 +143,11 @@ if __name__ == "__main__":
     )
     parser.add_argument("spec", help="Path to the JSON spec file")
     parser.add_argument(
+        "--template",
+        default=None,
+        help=f"Path to a .pptx template for branding (default: {DEFAULT_TEMPLATE})",
+    )
+    parser.add_argument(
         "--output",
         default="output",
         help="Output directory (default: output/)",
@@ -132,6 +157,7 @@ if __name__ == "__main__":
     result = generate_ppt(
         spec_path=Path(args.spec),
         output_dir=Path(args.output),
+        template=Path(args.template) if args.template else None,
     )
     print(result)
     sys.exit(0)

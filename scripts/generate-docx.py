@@ -5,8 +5,11 @@ Reads a JSON spec file (docx_report shape) and produces a .docx document
 with a Heading 1 title, Heading 2 section headings, and Normal paragraphs
 for body content.
 
+If templates/report.docx exists it is loaded as a style base (branding,
+fonts, colors). Pass --template to override the template path explicitly.
+
 Usage:
-    python scripts/generate-docx.py [--input doc-content/report.json] [--output output/]
+    python scripts/generate-docx.py [--input doc-content/report.json] [--template <path>] [--output output/]
 """
 
 import sys
@@ -21,13 +24,26 @@ except ImportError:
     print("Missing dependency. Run: pip install -r scripts/requirements.txt", file=sys.stderr)
     sys.exit(1)
 
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+DEFAULT_TEMPLATE = TEMPLATES_DIR / "report.docx"
+
 
 def slugify(title: str) -> str:
     """Convert a title string to a lowercase underscore slug."""
     return title.lower().replace(" ", "_")
 
 
-def generate_docx(spec_path: Path, output_dir: Path) -> Path:
+def _base_document(template: Path | None) -> Document:
+    if template and template.exists():
+        doc = Document(str(template))
+        body = doc.element.body
+        for child in list(body):
+            body.remove(child)
+        return doc
+    return Document()
+
+
+def generate_docx(spec_path: Path, output_dir: Path, template: Path | None = None) -> Path:
     """
     Build a .docx document from a docx_report JSON spec.
 
@@ -63,7 +79,8 @@ def generate_docx(spec_path: Path, output_dir: Path) -> Path:
     title: str = spec.get("title", "Document")
     sections: list = spec.get("sections", [])
 
-    doc = Document()
+    resolved_template = template if template is not None else DEFAULT_TEMPLATE
+    doc = _base_document(resolved_template)
 
     doc.add_heading(title, level=1)
 
@@ -98,6 +115,11 @@ if __name__ == "__main__":
         help="Path to the JSON spec file (default: doc-content/report.json)",
     )
     parser.add_argument(
+        "--template",
+        default=None,
+        help=f"Path to a .docx template for branding (default: {DEFAULT_TEMPLATE})",
+    )
+    parser.add_argument(
         "--output",
         default="output",
         help="Output directory (default: output/)",
@@ -107,6 +129,7 @@ if __name__ == "__main__":
     result = generate_docx(
         spec_path=Path(args.input),
         output_dir=Path(args.output),
+        template=Path(args.template) if args.template else None,
     )
     print(result)
     sys.exit(0)

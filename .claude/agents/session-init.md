@@ -22,18 +22,20 @@ No input required. The agent collects all event details by prompting the user di
 
 1. Read `event-context.md` with `Read`.
 2. If it already contains real data (not just `[TBD]`): ask the user — **"Continue the current event or start a new one?"**
-3. If new (or template): ask all questions **at once** in a numbered list:
+3. If new (or template): output **all 9 questions in one single message**, numbered exactly as below, then **STOP and wait** for the user's reply. Do NOT ask one question at a time. Do NOT split into multiple messages. Do NOT write event-context.md before receiving answers.
 
 ```
-1. Event name?
-2. Date (or period)?
-3. Type? (festival / sports / cultural / workshop / gala / other)
-4. Expected number of attendees?
-5. Fixed budget allocated (€)?
-6. Event lead (name)?
-7. Key contacts (names + roles) — leave blank if unknown
-8. Preferred venue area (Paris arrondissement or neighbourhood)?
-9. Constraints or special notes?
+Bonjour ! Pour configurer votre événement, répondez aux 9 questions suivantes :
+
+1. Nom de l'événement ?
+2. Date (ou période) ?
+3. Type ? (festival / sports / culturel / workshop / gala / autre)
+4. Nombre de participants attendus ?
+5. Budget fixe alloué (€) ?
+6. Responsable de l'événement (nom) ?
+7. Contacts clés (noms + rôles) — laisser vide si inconnu
+8. Zone préférée pour la salle (arrondissement ou quartier Paris) ?
+9. Contraintes ou notes particulières ?
 ```
 
 4. Write `event-context.md` using the exact format below.

@@ -6,6 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ~/.claude:/root/.claude:ro
       - ./event-context.md:/app/event-context.md
       - ./drafts:/app/drafts
       - ./doc-content:/app/doc-content

@@ -6,9 +6,14 @@ node_modules/
 COMMANDS.md
 template.md
 
+event-context.md
+.env
+
 # Session event data — not shared, populated each session
 drafts/*
 !drafts/.gitkeep
 doc-content/*
 !doc-content/.gitkeep
+output/*
+!output/.gitkeep
 

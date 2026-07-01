@@ -4,7 +4,7 @@
     "caveman@caveman": true
   },
   "companyAnnouncements": [
-    "AGEVP — Multiagent Event Planner | Agents: session-init · venue-scout · info-compiler · budget-validator · event-planner · email-drafter · doc-generator · claude-reviewer · doc-updater · py-dev · api-dev · webapp-dev | Type your task or ask to continue the current event."
+    "AGEVP — Multiagent Event Planner | Agents: session-init · venue-scout · info-compiler · budget-validator · event-planner · email-drafter · doc-generator · py-dev · gdrive-uploader · claude-reviewer · doc-updater · api-dev · webapp-dev | Type your task or ask to continue the current event."
   ],
   "hooks": {
     "SessionStart": [

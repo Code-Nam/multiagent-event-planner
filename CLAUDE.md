@@ -63,6 +63,7 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 | `email-drafter` | Draft professional emails (no send) | "write to", "contacter", "email for" |
 | `doc-generator` | JSON content specs for docs (xlsx/docx/ppt) | "recap file", "document", "Excel", "presentation" |
 | `py-dev` | Write/run Python scripts for xlsx/docx/pptx generation and Gmail API drafts | `/py-run`, `/py-gmail`, "generate Excel", "create draft in Gmail" |
+| `gdrive-uploader` | Upload output/ files to Google Drive under event-named folder | `/gdrive-upload`, "upload to Drive", "envoyer sur Drive" |
 | `claude-reviewer` | Read-only config audit — returns prioritised improvement plan | `/claude-review`, "audit agents", "review setup" |
 | `doc-updater` | Sync README, CLAUDE.md, settings to current agent/skill set | `/sync-docs`, "update docs", "sync documentation" |
 | `api-dev` | Build/maintain FastAPI routes, Pydantic models, services | "fix api", "add endpoint", "api route", "FastAPI", "backend" |
@@ -79,6 +80,7 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 6. email-drafter             → drafts/<purpose>-*.md
 7. doc-generator             → doc-content/*.json
 8. py-dev  (Phase 2)         → output/*.xlsx / *.docx / *.pptx  OR  Gmail draft ID
+9. gdrive-uploader (optional) → Google Drive folder + per-file links
 ```
 
 Flow is a guide — user can jump to any step.
@@ -88,6 +90,7 @@ Tooling agents (run anytime, independent of pipeline):
 - `/sync-docs` → `doc-updater` — doc sync
 - `/py-run [xlsx|docx|ppt]` → `py-dev` — generate actual output files
 - `/py-gmail [purpose]` → `py-dev` — push email draft to Gmail
+- `/gdrive-upload` → `gdrive-uploader` — upload output/ to Google Drive
 - `/api-run` → `api-dev` — start FastAPI dev server
 - `/webapp-run` → `webapp-dev` — start Vue 3 dev server
 

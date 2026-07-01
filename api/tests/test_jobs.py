@@ -63,7 +63,7 @@ def test_get_jobs_project_filter(client, tmp_claude):
     make_job(tmp_claude["jobs"], "job-aaa", SAMPLE_STATE)
     other = {**SAMPLE_STATE, "cwd": "/home/user/otherproject"}
     make_job(tmp_claude["jobs"], "job-bbb", other)
-    resp = client.get("/api/jobs?project=myproject")
+    resp = client.get("/api/jobs?project=home-user-myproject")
     assert resp.status_code == 200
     body = resp.json()
     assert body["total"] == 1

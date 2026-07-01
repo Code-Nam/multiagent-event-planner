@@ -128,7 +128,7 @@ def test_list_jobs_filter_project(tmp_claude):
     make_job(tmp_claude["jobs"], "job-abc", SAMPLE_STATE)
     other = {**SAMPLE_STATE, "cwd": "/home/user/otherproject"}
     make_job(tmp_claude["jobs"], "job-xyz", other)
-    result = list_jobs(project="myproject")
+    result = list_jobs(project="home-user-myproject")
     assert result.total == 1
     assert result.jobs[0].id == "job-abc"
 

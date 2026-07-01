@@ -15,6 +15,7 @@ Usage:
 import sys
 import json
 import argparse
+from copy import copy as _copy
 from pathlib import Path
 
 try:
@@ -25,7 +26,7 @@ except ImportError:
     sys.exit(1)
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
-DEFAULT_TEMPLATE = TEMPLATES_DIR / "recap.xlsx"
+DEFAULT_TEMPLATE = TEMPLATES_DIR / "Modele_AGEVP_Suivi.xlsx"
 
 
 def auto_fit_columns(ws: openpyxl.worksheet.worksheet.Worksheet) -> None:
@@ -43,15 +44,36 @@ def auto_fit_columns(ws: openpyxl.worksheet.worksheet.Worksheet) -> None:
         ws.column_dimensions[col_letter].width = min(max_len + 4, 60)
 
 
-def _base_workbook(template: Path | None) -> openpyxl.Workbook:
+def _extract_header_style(template: Path):
+    """Return (font, fill, alignment) from first bold+filled row in template's first sheet."""
+    wb = openpyxl.load_workbook(template)
+    ws = wb[wb.sheetnames[0]]
+    for row in ws.iter_rows():
+        c = row[0]
+        try:
+            has_fill = (
+                c.fill
+                and c.fill.fgColor
+                and c.fill.fgColor.rgb not in ("00000000", "FFFFFFFF")
+            )
+        except Exception:
+            has_fill = False
+        if has_fill and c.font and c.font.bold:
+            return (_copy(c.font), _copy(c.fill), _copy(c.alignment))
+    return None
+
+
+def _base_workbook(template: Path | None):
+    """Return (workbook, header_style) where header_style is (Font, Fill, Alignment) or None."""
     if template and template.exists():
+        header_style = _extract_header_style(template)
         wb = openpyxl.load_workbook(template)
         for name in list(wb.sheetnames):
             del wb[name]
-        return wb
+        return wb, header_style
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
-    return wb
+    return wb, None
 
 
 def generate_xlsx(spec_path: Path, output_dir: Path, template: Path | None = None) -> Path:
@@ -96,9 +118,7 @@ def generate_xlsx(spec_path: Path, output_dir: Path, template: Path | None = Non
         sys.exit(1)
 
     resolved_template = template if template is not None else DEFAULT_TEMPLATE
-    wb = _base_workbook(resolved_template)
-
-    bold_font = Font(bold=True)
+    wb, header_style = _base_workbook(resolved_template)
 
     for sheet_spec in sheets:
         sheet_name: str = sheet_spec.get("name", "Sheet")
@@ -109,8 +129,16 @@ def generate_xlsx(spec_path: Path, output_dir: Path, template: Path | None = Non
 
         if headers:
             ws.append(headers)
+            h_font, h_fill, h_align = header_style if header_style else (None, None, None)
             for cell in ws[1]:
-                cell.font = bold_font
+                if h_font:
+                    cell.font = _copy(h_font)
+                else:
+                    cell.font = Font(bold=True)
+                if h_fill:
+                    cell.fill = _copy(h_fill)
+                if h_align:
+                    cell.alignment = _copy(h_align)
 
         for row in rows:
             ws.append(row)

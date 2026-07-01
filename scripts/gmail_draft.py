@@ -7,6 +7,7 @@ import sys
 from email.mime.text import MIMEText
 
 import yaml
+from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -15,6 +16,7 @@ from googleapiclient.discovery import build
 SCOPES = ["https://www.googleapis.com/auth/gmail.compose"]
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(os.path.dirname(SCRIPT_DIR), ".env"))
 CREDENTIALS_PATH = os.path.join(SCRIPT_DIR, "credentials.json")
 TOKEN_PATH = os.path.join(SCRIPT_DIR, "token.json")
 

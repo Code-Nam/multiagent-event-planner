@@ -11,6 +11,9 @@ template.md
 
 event-context.md
 .env
+scripts/credentials*.json
+scripts/client_secret*.json
+scripts/token*.json
 
 # Session event data — not shared, populated each session
 drafts/*

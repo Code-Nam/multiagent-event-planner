@@ -1,34 +1,22 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-
-const navLinks = [
-  { to: '/setup', label: 'Setup' },
-  { to: '/venues', label: 'Venues' },
-  { to: '/budget', label: 'Budget' },
-  { to: '/plan', label: 'Plan' },
-  { to: '/emails', label: 'Emails' },
-  { to: '/export', label: 'Export' },
-  { to: '/pipeline', label: 'Pipeline' }
-]
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-900">
-    <nav class="bg-white border-b border-gray-200 shadow-sm">
-      <div class="max-w-6xl mx-auto px-4 flex items-center gap-1 h-14">
-        <span class="font-bold text-indigo-600 mr-4 text-lg tracking-tight">AGEVP</span>
+    <nav class="border-b border-gray-200 bg-white shadow-sm">
+      <div class="mx-auto flex h-14 max-w-6xl items-center gap-1 px-4">
+        <span class="mr-4 text-lg font-bold tracking-tight text-indigo-600">Token Dashboard</span>
         <RouterLink
-          v-for="link in navLinks"
-          :key="link.to"
-          :to="link.to"
-          class="px-3 py-1.5 rounded text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-          active-class="text-indigo-600 bg-indigo-50"
+          to="/sessions"
+          class="rounded px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+          active-class="bg-indigo-50 text-indigo-600"
         >
-          {{ link.label }}
+          Sessions
         </RouterLink>
       </div>
     </nav>
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="mx-auto max-w-6xl px-4 py-8">
       <RouterView />
     </main>
   </div>

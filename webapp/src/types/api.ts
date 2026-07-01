@@ -1,42 +1,48 @@
-export interface EventContext {
+export interface TokenUsage {
+  input_tokens: number
+  output_tokens: number
+  cache_creation_input_tokens: number
+  cache_read_input_tokens: number
+  total_tokens: number
+  api_call_count: number
+}
+
+export interface AgentMeta {
+  agent_type: string
+  description: string
+  spawn_depth: number
+  usage: TokenUsage | null
+  model: string | null
+}
+
+export interface Job {
+  id: string
   name: string
-  date: string
-  type: string
-  expected_attendance: string
-  fixed_budget: string
-  event_lead: string
-  preferred_area: string
-  constraints: string
+  template: string
+  state: string
+  tokens: number
+  model: string | null
+  usage: TokenUsage | null
+  cwd: string
+  project: string
+  created_at: string
+  updated_at: string
+  source: string
 }
 
-export interface DraftSummary {
-  name: string
-  purpose: string
-  to: string
-  subject: string
-  status: string
+export interface JobDetail extends Job {
+  agents: AgentMeta[]
 }
 
-export interface Draft extends DraftSummary {
-  body: string
+export interface JobList {
+  jobs: Job[]
+  total: number
 }
 
-export interface OutputFile {
-  name: string
-  type: string
-  path: string
-}
-
-export interface PipelineStatus {
-  event_configured: boolean
-  drafts_count: number
-  doc_content_count: number
-  output_count: number
-  draft_names: string[]
-}
-
-export interface GenerateResult {
-  ok: boolean
-  path?: string
-  error?: string
+export interface LiveSnapshot {
+  job_id: string
+  state: string
+  tokens: number
+  updated_at: string
+  usage: TokenUsage | null
 }

@@ -24,8 +24,13 @@ Upload all files in `output/` to Google Drive under a folder named after the cur
 1. Read `event-context.md` to confirm event name and that output files exist.
 2. Run the upload script from the project root:
    ```
-   python scripts/gdrive_upload.py
+   python scripts/gdrive_upload.py [files/globs ...] [--folder <name>]
    ```
+   - No args → every file in `output/` goes to one event-named folder.
+   - Files/globs (resolved against CWD, then `output/`) upload a subset —
+     e.g. `python scripts/gdrive_upload.py '*-kpop-2026.*' --folder kpop-2026`.
+   - Multiple destination folders → one run per folder with its file subset.
+     Never delete or move local files to split an upload.
 3. If the script opens a browser for OAuth2 auth, inform the user and wait.
 4. Capture output: folder link + per-file links.
 

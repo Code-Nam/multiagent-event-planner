@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
-"""Upload output/ files to Google Drive under an event-named folder."""
+"""Upload output/ files to Google Drive under an event-named folder.
 
+Usage:
+    python scripts/gdrive_upload.py [files/globs ...] [--folder <name>]
+
+Without arguments every file in output/ goes to one folder named after the
+event (GDRIVE_FOLDER env or event-context.md). Pass files or globs (resolved
+against the CWD, then output/) to upload a subset, and --folder to name the
+Drive folder explicitly — one run per destination folder.
+"""
+
+import argparse
+import glob
 import os
 import re
 import sys
@@ -103,16 +114,53 @@ def upload_file(service: Resource, path: str, folder_id: str) -> str:
     return result.get("webViewLink", result["id"])
 
 
-def main() -> None:
+def resolve_files(patterns: list[str]) -> list[str]:
+    """Expand file paths/globs, trying the CWD first, then output/."""
+    resolved: list[str] = []
+    for pat in patterns:
+        matches = [m for m in glob.glob(pat) if os.path.isfile(m)]
+        if not matches:
+            matches = [
+                m
+                for m in glob.glob(os.path.join(OUTPUT_DIR, pat))
+                if os.path.isfile(m)
+            ]
+        if not matches:
+            print(f"ERROR: no file matches '{pat}'", file=sys.stderr)
+            sys.exit(1)
+        resolved.extend(sorted(matches))
+    return list(dict.fromkeys(resolved))  # dedupe, keep order
+
+
+def default_files() -> list[str]:
     if not os.path.isdir(OUTPUT_DIR):
         print("No output/ directory — nothing to upload.")
         sys.exit(0)
-
-    files = sorted(
-        f
+    return sorted(
+        os.path.join(OUTPUT_DIR, f)
         for f in os.listdir(OUTPUT_DIR)
         if not f.startswith(".") and os.path.isfile(os.path.join(OUTPUT_DIR, f))
     )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Upload files to Google Drive under an event-named folder."
+    )
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help="Files or globs to upload (resolved against CWD, then output/). "
+        "Default: every file in output/.",
+    )
+    parser.add_argument(
+        "--folder",
+        default=None,
+        help="Drive folder name (overrides GDRIVE_FOLDER env and event-context.md)",
+    )
+    args = parser.parse_args()
+
+    files = resolve_files(args.files) if args.files else default_files()
 
     if not files:
         print("No files in output/ to upload.")
@@ -121,13 +169,13 @@ def main() -> None:
     creds = authenticate()
     service = build("drive", "v3", credentials=creds)
 
-    event_name = os.environ.get("GDRIVE_FOLDER") or get_event_name()
+    event_name = args.folder or os.environ.get("GDRIVE_FOLDER") or get_event_name()
     folder_id = find_or_create_folder(service, event_name)
 
     print(f"Uploading to Drive folder: {event_name}")
     failed = []
-    for filename in files:
-        path = os.path.join(OUTPUT_DIR, filename)
+    for path in files:
+        filename = os.path.basename(path)
         try:
             link = upload_file(service, path, folder_id)
             print(f"  {filename} → {link}")

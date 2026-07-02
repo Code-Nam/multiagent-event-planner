@@ -86,6 +86,7 @@ This session is the **supervisor**. Delegate to specialists — never do event w
 Flow is a guide — user can jump to any step.
 
 Tooling agents (run anytime, independent of pipeline):
+- `/new-event` → resets `event-context.md` (confirms first) then runs `session-init`
 - `/claude-review` → `claude-reviewer` — config audit
 - `/sync-docs` → `doc-updater` — doc sync
 - `/py-run [xlsx|docx|ppt]` → `py-dev` — generate actual output files

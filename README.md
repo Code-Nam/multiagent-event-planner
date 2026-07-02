@@ -2,7 +2,7 @@
 
 Claude Code workspace for planning events at [AGEVP](https://www.agevp.com/wordpress/fr/accueil/qui-sommes-nous/) — Association Générale des Étudiants Vietnamiens de Paris.
 
-Each Claude Code session = one event project. A supervisor orchestrates 12 specialised agents covering venue search, budget validation, operational planning, email drafting, and document generation.
+Each Claude Code session = one event project. A supervisor orchestrates 13 specialised agents covering venue search, budget validation, operational planning, email drafting, document generation, and Google Drive upload.
 
 The repo also ships a **Claude Code Token Dashboard** — a local FastAPI + Vue 3 app that reads `~/.claude/` to show token usage per session. It lives in `api/` and `webapp/` and is meant to run alongside active Claude Code sessions.
 
@@ -121,6 +121,8 @@ Key components: `agent-breakdown-table`, `session-summary-card`, `token-bar`, `l
 | `/export` | Generate xlsx/docx/ppt JSON specs via doc-generator |
 | `/py-run` | Run generation scripts → writes `output/` files |
 | `/py-gmail` | Push latest email draft to Gmail as API draft (not sent) |
+| `/gdrive-upload` | Upload all `output/` files to Google Drive — returns folder + per-file links |
+| `/new-event` | Reset `event-context.md` and run session-init for a new event (confirms first) |
 | `/claude-review` | Audit all Claude config files — prioritised improvement plan |
 | `/sync-docs` | Sync README, CLAUDE.md, settings to current agents and skills |
 | `/api-run` | Start FastAPI dev server at `http://localhost:8000` |
@@ -140,6 +142,7 @@ Key components: `agent-breakdown-table`, `session-summary-card`, `token-bar`, `l
 | `email-drafter` | Draft professional emails in French — no send, draft only | `drafts/<purpose>-*.md` |
 | `doc-generator` | JSON content specs for xlsx/docx/ppt output files | `doc-content/*.json` |
 | `py-dev` | Write/run Python scripts for doc generation and Gmail API drafts | `output/`, Gmail draft ID |
+| `gdrive-uploader` | Upload `output/` files to Google Drive under an event-named folder | Drive folder + per-file links |
 | `claude-reviewer` | Read-only audit of all Claude config files | conversation |
 | `doc-updater` | Sync README, CLAUDE.md, settings to current agent/skill set | in-place edits |
 | `api-dev` | Build/maintain FastAPI routes, Pydantic models, services | `api/` |
@@ -156,6 +159,7 @@ Key components: `agent-breakdown-table`, `session-summary-card`, `token-bar`, `l
 6. email-drafter             → drafts/<purpose>-*.md
 7. doc-generator             → doc-content/*.json
 8. py-dev (Phase 2)          → output/*.xlsx / *.docx / *.pptx  OR  Gmail draft ID
+9. gdrive-uploader (optional) → Google Drive folder + per-file links
 ```
 
 Jump to any step — flow is a guide, not a requirement.
@@ -167,8 +171,8 @@ Jump to any step — flow is a guide, not a requirement.
 ```
 .
 ├── .claude/
-│   ├── agents/               # 12 agent definitions
-│   ├── skills/               # 13 slash commands
+│   ├── agents/               # 13 agent definitions
+│   ├── skills/               # 15 slash commands
 │   ├── hooks/                # SessionStart preview + PreToolUse RTK proxy
 │   └── settings.json
 ├── api/                      # FastAPI — Claude Code Token Dashboard backend

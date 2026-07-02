@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-CONTEXT="event-context.md"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONTEXT="$SCRIPT_DIR/../../event-context.md"
 SEP="──────────────────────────────────────────────"
 
 if grep -q '\[TBD\]' "$CONTEXT" 2>/dev/null; then
@@ -26,6 +27,6 @@ else
   printf '%s\n' "$SEP"
   printf '  session-init · venue-scout · info-compiler · budget-validator · event-planner\n'
   printf '  email-drafter · doc-generator · claude-reviewer · doc-updater · py-dev\n'
-  printf '  api-dev · webapp-dev\n'
+  printf '  gdrive-uploader · api-dev · webapp-dev\n'
   printf '%s\n\n' "$SEP"
 fi

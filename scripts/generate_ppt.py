@@ -74,7 +74,8 @@ def _remove_slide(prs, idx: int) -> None:
         try:
             prs.part._rels.pop(r_id)
         except KeyError:
-            pass
+            print(f"WARNING: slide relationship {r_id} not found — "
+                  "python-pptx internals may have changed", file=sys.stderr)
     prs.slides._sldIdLst.remove(slide_ids[idx])
 
 

@@ -36,10 +36,8 @@ Report:
   doc-content/docx_report-<slug>.json  ✅
   doc-content/ppt_presentation-<slug>.json ✅
 
-  Run generation scripts:
-    python scripts/generate_xlsx.py doc-content/xlsx_recap-<slug>.json
-    python scripts/generate_docx.py doc-content/docx_report-<slug>.json
-    python scripts/generate_ppt.py  doc-content/ppt_presentation-<slug>.json
+  Next: /py-run to generate actual output files
+        (/py-run xlsx|docx|ppt for a single format)
 ──────────────────────────────────────────────────
 ```
 

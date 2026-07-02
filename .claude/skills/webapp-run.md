@@ -30,6 +30,12 @@ API must be running at `VITE_API_BASE` (default `http://localhost:8000`). Run `/
 - A view, component, or store is missing
 - TypeScript errors need fixing
 
+## Rules
+
+- Port 5173 already in use → report the conflicting process, do not kill it without asking.
+- `npm install` failure → report stderr, status blocked — never continue with missing deps.
+- `VITE_API_BASE` missing → warn and continue; the app will surface API errors itself.
+
 ## receipt format
 
 ```

@@ -107,6 +107,7 @@ receipt:
 
 ### Hard rules
 
+- Slug convention for all draft/spec filenames: `<type>-<YYYY-MM>` — e.g. `venues-2026-07.md`, `gala-2026-07`
 - Always pass explicitly into each delegation: file paths, context, prior decisions
 - Subagents start with no shared memory — every delegation must be self-contained
 - `email-drafter`: draft only, never send

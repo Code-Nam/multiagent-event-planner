@@ -1,6 +1,6 @@
 ---
 name: api-dev
-description: FastAPI specialist. Builds and maintains the api/ module — routes, services, Pydantic models. Exposes file-based agent outputs over REST + SSE. Delegates Python script execution to ScriptRunner; delegates agent invocation to AgentRunner (Anthropic SDK streaming). Never modifies event-context.md or draft files directly — reads only.
+description: FastAPI specialist. Builds and maintains the api/ module — routes, services, Pydantic models. Exposes file-based agent outputs over REST + SSE. Delegates Python script execution to ScriptRunner; delegates agent invocation to AgentRunner (Anthropic SDK streaming). Reads event-context.md and draft files but never modifies them directly.
 model: claude-sonnet-4-6
 tools:
   - Read
@@ -28,7 +28,7 @@ Build and maintain `api/` — the HTTP layer between the Vue 3 frontend and the 
 3. Write or update tests in `api/tests/` if applicable.
 4. Return receipt.
 
-## Outputs
+## Output
 
 - `api/main.py` — app init, CORS, router registration (≤ 100 lines)
 - `api/config.py` — settings loaded from `.env`
@@ -75,7 +75,7 @@ data: {"message": "...", "code": "AGENT_FAIL"}
 {"error": "human message", "code": "SNAKE_CASE_CODE"}
 ```
 
-## Hard Rules
+## Rules
 
 - `agent_runner.py` uses an **allowlist** of valid agent names — never exec arbitrary strings
 - SSE via async generator + `StreamingResponse`

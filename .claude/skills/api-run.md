@@ -25,6 +25,12 @@ Starts the FastAPI server so the frontend can reach `http://localhost:8000/api`.
 - A route or endpoint is missing
 - A Pydantic model needs updating
 
+## Rules
+
+- Port 8000 already in use → report the conflicting process, do not kill it without asking.
+- `pip install` failure → report stderr, status blocked — never continue with missing deps.
+- Missing `.env` values (e.g. `CLAUDE_DIR`) → warn but start anyway; the API reports its own config errors.
+
 ## receipt format
 
 ```

@@ -38,7 +38,7 @@ Build and maintain `webapp/` — the Vue 3 SPA that consumes the AGEVP FastAPI (
 - **Router:** Vue Router 4
 - **Tests:** Vitest (unit/component), Playwright (e2e)
 
-## Outputs
+## Output
 
 ```
 webapp/

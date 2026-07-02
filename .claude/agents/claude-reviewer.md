@@ -68,7 +68,7 @@ No input required. The agent reads the full config autonomously. Optionally spec
 - No agent invents data (rule present in Rules section)
 - Receipt format matches CLAUDE.md standard
 
-## Output format
+## Output
 
 ```markdown
 # Claude Config Audit — <date>

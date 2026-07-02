@@ -34,7 +34,8 @@ Output a status dashboard:
 ──────────────────────────────────────────────────
 ```
 
-Rules:
+## Rules
+
 - Use ✅ when output file exists for that step; ⬜ when missing.
 - For budget-validator: extract APPROVED/REJECTED from the file if present.
 - Keep output concise — dashboard only, no prose.

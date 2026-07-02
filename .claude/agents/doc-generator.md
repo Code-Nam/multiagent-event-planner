@@ -57,12 +57,16 @@ Structure event data into JSON content specs for document generation. No actual 
 }
 ```
 
+`title`, `event` and `date` feed the branded title band replicated on every sheet — always fill them.
+
 ### docx_report
 
 ```json
 {
   "type": "docx_report",
   "title": "<Title>",
+  "subtitle": "<Subtitle — optional, falls back to event>",
+  "event": "<Event name>",
   "sections": [
     {"heading": "Event summary", "content": "..."},
     {"heading": "Selected venue", "content": "..."},
@@ -72,12 +76,19 @@ Structure event data into JSON content specs for document generation. No actual 
 }
 ```
 
+`content` formatting (rendered by the branded template):
+- `\n\n` (blank line) → new paragraph
+- single `\n` → line break inside the paragraph
+- lead detail lines with `• ` for visual bullets — plain text, no markdown
+
 ### ppt_presentation
 
 ```json
 {
   "type": "ppt_presentation",
   "title": "<Title>",
+  "event": "<Event name — cover subtitle>",
+  "date": "<Date — cover>",
   "slides": [
     {"title": "Event overview", "bullets": ["...", "..."]},
     {"title": "Selected venue", "bullets": ["...", "..."]},
@@ -86,6 +97,12 @@ Structure event data into JSON content specs for document generation. No actual 
   ]
 }
 ```
+
+`bullets` map onto the branded 3-key-points slide layout:
+- top-level bullet → key point (max 3 per slide; extras roll onto "(suite n)" slides)
+- bullet starting with whitespace or `•` → description line under the previous point
+- aim for 3 key points per slide, each with 0–3 short description lines
+- empty-string bullets are dropped — no need for spacers
 
 ## Receipt
 

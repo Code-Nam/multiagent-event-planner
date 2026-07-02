@@ -99,9 +99,14 @@ def _build_from_template(doc, title, subtitle, sections) -> bool:
         h = copy.deepcopy(heading_tmpl)
         fill_para_tokens(h, {"SEC_NUM": f"{i}  ", "SEC_TITLE": section.get("heading", "")})
         body.append(h)
-        b = copy.deepcopy(body_tmpl)
-        fill_para_tokens(b, {"SEC_BODY": section.get("content", "")})
-        body.append(b)
+        # One template paragraph per blank-line-separated block; single \n
+        # inside a block becomes a soft line break (fill_para_tokens).
+        content = section.get("content", "")
+        blocks = [blk for blk in content.split("\n\n") if blk.strip()] or [""]
+        for blk in blocks:
+            b = copy.deepcopy(body_tmpl)
+            fill_para_tokens(b, {"SEC_BODY": blk})
+            body.append(b)
 
     if footer is not None:
         body.append(footer)

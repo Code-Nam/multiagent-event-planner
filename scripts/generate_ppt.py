@@ -79,6 +79,26 @@ def _remove_slide(prs, idx: int) -> None:
     prs.slides._sldIdLst.remove(slide_ids[idx])
 
 
+def _group_points(bullets: list) -> list:
+    """Group flat bullets into (point, [desc lines]) pairs.
+
+    A bullet that starts with whitespace or "•" continues the previous point
+    as a description line; empty bullets are dropped. A leading sub-bullet
+    with no parent becomes its own point.
+    """
+    points: list = []
+    for raw in bullets:
+        text = str(raw)
+        if not text.strip():
+            continue
+        is_sub = text[:1] in (" ", "\t") or text.lstrip().startswith("•")
+        if is_sub and points:
+            points[-1][1].append(text.strip().lstrip("•").strip())
+        else:
+            points.append((text.strip(), []))
+    return points
+
+
 def generate_ppt(spec_path: Path, output_dir: Path, template: Path | None = None) -> Path:
     spec = load_spec(spec_path, "ppt_presentation")
 
@@ -112,18 +132,21 @@ def generate_ppt(spec_path: Path, output_dir: Path, template: Path | None = None
         "PRES_DATE": date,
     })
 
-    # Content slides — 3 bullets per output slide using the 3-key-points layout.
+    # Content slides — 3 key points per output slide, matching the template's
+    # {{POINTn}}/{{POINTn_DESC}} layout. Indented or "•"-prefixed bullets are
+    # folded into the description of the preceding top-level point.
     for slide_spec in slides_spec:
         slide_title = slide_spec.get("title", "")
-        bullets = slide_spec.get("bullets", [])
-        chunks = [bullets[i:i + 3] for i in range(0, max(len(bullets), 1), 3)]
+        points = _group_points(slide_spec.get("bullets", []))
+        chunks = [points[i:i + 3] for i in range(0, max(len(points), 1), 3)]
         for ci, chunk in enumerate(chunks):
             s = _clone_slide(prs, content_idx)
             label = slide_title if ci == 0 else f"{slide_title} (suite {ci + 1})"
             tokens = {"SLIDE_TITLE": label}
             for pi in range(3):
-                tokens[f"POINT{pi + 1}"] = chunk[pi] if pi < len(chunk) else ""
-                tokens[f"POINT{pi + 1}_DESC"] = ""
+                point, desc = chunk[pi] if pi < len(chunk) else ("", [])
+                tokens[f"POINT{pi + 1}"] = point
+                tokens[f"POINT{pi + 1}_DESC"] = "\n".join(desc)
             fill_slide_tokens(s, tokens)
 
     # Remove the original template slides (always at indices 0..n_original-1).

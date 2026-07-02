@@ -12,12 +12,19 @@ marker is removed) so no raw ``{{...}}`` ever leaks into the output.
 Substitution is run-level: only the individual run holding a token is
 rewritten, so surrounding runs keep their formatting. Inject one token per run
 in the template (see tokenize_templates.py) — tokens must not span runs.
+
+Values may contain newlines: a literal ``\n`` inside a ``w:t``/``a:t`` node is
+never rendered by Word/PowerPoint, so multi-line values are exploded into
+``<w:br/>`` (docx) or ``<a:br/>`` (pptx) elements, keeping the run formatting.
 """
 
 import re
 import sys
 import json
+import copy
 from pathlib import Path
+
+from lxml import etree
 
 # OOXML namespaces
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"    # WordprocessingML
@@ -68,11 +75,34 @@ def para_has_token(p_elem, name: str) -> bool:
     return f"{{{name}}}" in para_text(p_elem)
 
 
+def _explode_w_t(t_elem, text: str) -> None:
+    """Replace a w:t with <w:t/><w:br/><w:t/>… so newlines actually render."""
+    run = t_elem.getparent()
+    idx = list(run).index(t_elem)
+    run.remove(t_elem)
+    for i, seg in enumerate(text.split("\n")):
+        if i:
+            run.insert(idx, run.makeelement(f"{{{W}}}br", {}))
+            idx += 1
+        t = run.makeelement(f"{{{W}}}t", {})
+        t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+        t.text = seg
+        run.insert(idx, t)
+        idx += 1
+
+
 def fill_para_tokens(p_elem, tokens: dict) -> None:
-    """Replace tokens in every run of a w:p element, preserving run formatting."""
-    for t in p_elem.iter(f"{{{W}}}t"):
+    """Replace tokens in every run of a w:p element, preserving run formatting.
+
+    Multi-line values are split on ``\\n`` into ``<w:br/>``-separated segments.
+    """
+    for t in list(p_elem.iter(f"{{{W}}}t")):
         if t.text and "{{" in t.text:
-            t.text = _sub(t.text, tokens)
+            new = _sub(t.text, tokens)
+            if "\n" in new:
+                _explode_w_t(t, new)
+            else:
+                t.text = new
 
 
 def set_first_run_text(p_elem, text: str) -> None:
@@ -103,14 +133,45 @@ def slide_has_token(slide, name: str) -> bool:
                for shape in slide.shapes)
 
 
+def _explode_a_run(t_elem, text: str) -> None:
+    """Split an a:r into <a:r/><a:br/><a:r/>… so newlines actually render.
+
+    In DrawingML, a:br is a sibling of a:r inside a:p (not a child of the run),
+    so the whole run is duplicated per segment, keeping its a:rPr.
+    """
+    run = t_elem.getparent()
+    para = run.getparent()
+    idx = list(para).index(run)
+    r_pr = run.find(f"{{{A}}}rPr")
+    para.remove(run)
+    for i, seg in enumerate(text.split("\n")):
+        if i:
+            br = para.makeelement(f"{{{A}}}br", {})
+            if r_pr is not None:
+                br.append(copy.deepcopy(r_pr))
+            para.insert(idx, br)
+            idx += 1
+        new_run = copy.deepcopy(run)
+        new_run.find(f"{{{A}}}t").text = seg
+        para.insert(idx, new_run)
+        idx += 1
+
+
 def fill_slide_tokens(slide, tokens: dict) -> None:
-    """Replace tokens in every run of every text shape on a slide."""
+    """Replace tokens in every run of every text shape on a slide.
+
+    Multi-line values are split on ``\\n`` into ``<a:br/>``-separated runs.
+    """
     for shape in slide.shapes:
         if not shape.has_text_frame:
             continue
-        for t in shape.text_frame._txBody.iter(f"{{{A}}}t"):
+        for t in list(shape.text_frame._txBody.iter(f"{{{A}}}t")):
             if t.text and "{{" in t.text:
-                t.text = _sub(t.text, tokens)
+                new = _sub(t.text, tokens)
+                if "\n" in new:
+                    _explode_a_run(t, new)
+                else:
+                    t.text = new
 
 
 def set_shape_first_run(shape, text: str) -> None:

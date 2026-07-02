@@ -4,6 +4,7 @@
 import base64
 import os
 import sys
+from email.header import Header
 from email.mime.text import MIMEText
 
 import yaml
@@ -61,20 +62,31 @@ def parse_draft(path):
     frontmatter = yaml.safe_load(parts[1])
     body = parts[2].strip()
 
-    to = frontmatter.get("to") or os.environ.get("GMAIL_TO")
+    raw_to = frontmatter.get("to")
+    # YAML parses `[To complete]` as a list — coerce to string
+    if isinstance(raw_to, list):
+        raw_to = ", ".join(str(x) for x in raw_to)
+    elif raw_to is not None:
+        raw_to = str(raw_to).strip()
+
+    # Treat template placeholder as absent (handles both bare and bracketed forms)
+    PLACEHOLDER_MARKERS = {"[to complete]", "[à compléter]", "to complete", "à compléter", ""}
+    if not raw_to or raw_to.lower() in PLACEHOLDER_MARKERS:
+        raw_to = None
+
+    to = raw_to or os.environ.get("GMAIL_TO") or "annampierretran@gmail.com"
     subject = frontmatter.get("subject")
-    if not to:
-        raise ValueError("No recipient: set 'to' in frontmatter or GMAIL_TO env var")
     if not subject:
         raise ValueError("Frontmatter must include 'subject'")
 
     return to, subject, body
 
 
-def create_draft(service, to, subject, body):
+def create_draft(service, to: str, subject: str, body: str) -> str:
     message = MIMEText(body, "plain", "utf-8")
     message["to"] = to
-    message["subject"] = subject
+    # RFC2047-encode subject so non-ASCII chars (em-dash, accents) are safe
+    message["subject"] = Header(subject, "utf-8")
     raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
 
     draft = service.users().drafts().create(
@@ -84,20 +96,43 @@ def create_draft(service, to, subject, body):
     return draft["id"]
 
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python gmail_draft.py <draft-path>", file=sys.stderr)
-        sys.exit(1)
+def delete_draft(service, draft_id: str) -> None:
+    """Delete a Gmail draft by ID. Silently ignores 404 (already gone)."""
+    try:
+        service.users().drafts().delete(userId="me", id=draft_id).execute()
+        print(f"Draft deleted: {draft_id}")
+    except Exception as exc:
+        if "404" in str(exc) or "notFound" in str(exc):
+            print(f"Draft {draft_id} not found (already deleted or invalid)", file=sys.stderr)
+        else:
+            raise
 
-    draft_path = sys.argv[1]
-    if not os.path.exists(draft_path):
-        print(f"Draft file not found: {draft_path}", file=sys.stderr)
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Push a markdown draft to Gmail (never sends)."
+    )
+    parser.add_argument("draft_path", help="Path to the draft markdown file")
+    parser.add_argument(
+        "--delete-draft",
+        metavar="DRAFT_ID",
+        help="Delete this Gmail draft ID before creating the new one",
+    )
+    args = parser.parse_args()
+
+    if not os.path.exists(args.draft_path):
+        print(f"Draft file not found: {args.draft_path}", file=sys.stderr)
         sys.exit(1)
 
     creds = authenticate()
     service = build("gmail", "v1", credentials=creds)
 
-    to, subject, body = parse_draft(draft_path)
+    if args.delete_draft:
+        delete_draft(service, args.delete_draft)
+
+    to, subject, body = parse_draft(args.draft_path)
     draft_id = create_draft(service, to, subject, body)
     print(f"Draft created: {draft_id}")
 

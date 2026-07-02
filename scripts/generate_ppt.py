@@ -45,7 +45,11 @@ def _find_slide(prs, token: str) -> int:
 
 
 def _clone_slide(prs, src_idx: int):
-    """Append a deep-copy of prs.slides[src_idx] to prs and return the new slide."""
+    """Append a deep-copy of prs.slides[src_idx] to prs and return the new slide.
+
+    Uses the private `_spTree` element — python-pptx has no public slide-copy
+    API. Tested against python-pptx 0.6/1.0; re-check on upgrade.
+    """
     src = prs.slides[src_idx]
     new_slide = prs.slides.add_slide(src.slide_layout)
     dst_tree = new_slide.shapes._spTree
@@ -57,7 +61,11 @@ def _clone_slide(prs, src_idx: int):
 
 
 def _remove_slide(prs, idx: int) -> None:
-    """Remove prs.slides[idx] and its relationship entry."""
+    """Remove prs.slides[idx] and its relationship entry.
+
+    Uses the private `_sldIdLst`/`_rels` internals — python-pptx has no public
+    slide-delete API. Tested against python-pptx 0.6/1.0; re-check on upgrade.
+    """
     slide_ids = list(prs.slides._sldIdLst)
     if idx >= len(slide_ids):
         return

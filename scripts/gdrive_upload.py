@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+from googleapiclient.discovery import Resource, build
 from googleapiclient.http import MediaFileUpload
 
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
@@ -33,7 +33,7 @@ MIME_TYPES = {
 }
 
 
-def authenticate():
+def authenticate() -> Credentials:
     if not os.path.exists(CREDENTIALS_PATH):
         print(
             "Missing scripts/credentials.json. "
@@ -59,7 +59,7 @@ def authenticate():
     return creds
 
 
-def get_event_name():
+def get_event_name() -> str:
     if not os.path.exists(EVENT_CONTEXT_PATH):
         return "AGEVP-output"
     with open(EVENT_CONTEXT_PATH, "r", encoding="utf-8") as f:
@@ -72,7 +72,7 @@ def get_event_name():
     return "AGEVP-output"
 
 
-def find_or_create_folder(service, name):
+def find_or_create_folder(service: Resource, name: str) -> str:
     query = (
         f"name='{name}' and mimeType='application/vnd.google-apps.folder' "
         "and trashed=false"
@@ -87,7 +87,7 @@ def find_or_create_folder(service, name):
     return folder["id"]
 
 
-def upload_file(service, path, folder_id):
+def upload_file(service: Resource, path: str, folder_id: str) -> str:
     name = os.path.basename(path)
     ext = os.path.splitext(name)[1].lower()
     mime = MIME_TYPES.get(ext, "application/octet-stream")
@@ -103,12 +103,10 @@ def upload_file(service, path, folder_id):
     return result.get("webViewLink", result["id"])
 
 
-def main():
-    creds = authenticate()
-    service = build("drive", "v3", credentials=creds)
-
-    event_name = os.environ.get("GDRIVE_FOLDER") or get_event_name()
-    folder_id = find_or_create_folder(service, event_name)
+def main() -> None:
+    if not os.path.isdir(OUTPUT_DIR):
+        print("No output/ directory — nothing to upload.")
+        sys.exit(0)
 
     files = sorted(
         f
@@ -120,14 +118,29 @@ def main():
         print("No files in output/ to upload.")
         sys.exit(0)
 
+    creds = authenticate()
+    service = build("drive", "v3", credentials=creds)
+
+    event_name = os.environ.get("GDRIVE_FOLDER") or get_event_name()
+    folder_id = find_or_create_folder(service, event_name)
+
     print(f"Uploading to Drive folder: {event_name}")
+    failed = []
     for filename in files:
         path = os.path.join(OUTPUT_DIR, filename)
-        link = upload_file(service, path, folder_id)
-        print(f"  {filename} → {link}")
+        try:
+            link = upload_file(service, path, folder_id)
+            print(f"  {filename} → {link}")
+        except Exception as exc:
+            failed.append(filename)
+            print(f"  {filename} → FAILED: {exc}", file=sys.stderr)
 
     folder_meta = service.files().get(fileId=folder_id, fields="webViewLink").execute()
     print(f"\nFolder: {folder_meta.get('webViewLink', folder_id)}")
+
+    if failed:
+        print(f"{len(failed)} upload(s) failed: {', '.join(failed)}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

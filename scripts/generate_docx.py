@@ -41,6 +41,8 @@ def _normalize_style_names(doc: Document) -> None:
     # python-docx 1.2+ BabelFish translates specific UI names (e.g. "Heading 1"
     # -> "heading 1") before XML lookup. Templates saved by Word/LibreOffice may
     # store the capitalised form. Fix only the aliased names so lookup succeeds.
+    # BabelFish.style_aliases is a private internal (tested on python-docx 1.2)
+    # — re-check on library upgrade.
     from docx.styles.styles import BabelFish
     ui_to_internal = dict(BabelFish.style_aliases)
     for style_elem in doc.styles._element:

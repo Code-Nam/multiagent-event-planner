@@ -94,6 +94,18 @@ _SLIDE2 = {
 }
 
 
+def _find_slide_with_shapes(prs, names: set) -> "object | None":
+    """Return the first slide containing every shape name in `names`, or None.
+
+    Slides are located by their shape inventory rather than hard index so a
+    reordered or extended template still tokenizes the right slides.
+    """
+    for slide in prs.slides:
+        if names <= {sh.name for sh in slide.shapes}:
+            return slide
+    return None
+
+
 def _tokenize_slide(slide, mapping: dict) -> None:
     for shape in slide.shapes:
         if shape.name in mapping and shape.has_text_frame:
@@ -118,9 +130,14 @@ def tokenize_pptx() -> str:
     if _already_tokenized_pptx(prs):
         return f"skip  {PPTX.name} (already tokenized)"
 
-    _tokenize_slide(prs.slides[0], _SLIDE0)
-    _tokenize_date_shape(prs.slides[0])
-    _tokenize_slide(prs.slides[2], _SLIDE2)
+    cover = _find_slide_with_shapes(prs, set(_SLIDE0))
+    content = _find_slide_with_shapes(prs, set(_SLIDE2))
+    if cover is None or content is None:
+        return f"skip  {PPTX.name} (cover/content shapes not found — template layout changed?)"
+
+    _tokenize_slide(cover, _SLIDE0)
+    _tokenize_date_shape(cover)
+    _tokenize_slide(content, _SLIDE2)
 
     _backup(PPTX)
     prs.save(str(PPTX))

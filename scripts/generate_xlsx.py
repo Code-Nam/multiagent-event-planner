@@ -44,7 +44,7 @@ def auto_fit_columns(ws: openpyxl.worksheet.worksheet.Worksheet) -> None:
                 if cell_len > max_len:
                     max_len = cell_len
             except Exception:
-                pass
+                pass  # MergedCell and formula cells may not expose .value
         ws.column_dimensions[col_letter].width = min(max_len + 4, 60)
 
 

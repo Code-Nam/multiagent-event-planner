@@ -26,6 +26,7 @@ No input required. The agent reads the full config autonomously. Optionally spec
 4. `README.md` — agent table, slash commands table
 5. `.claude/settings.json` — companyAnnouncements, hooks
 6. `.claude/hooks/*.sh` — hook scripts
+7. `scripts/*.py` + `scripts/requirements.txt` — generation and API scripts
 
 ## Process
 
@@ -54,6 +55,12 @@ No input required. The agent reads the full config autonomously. Optionally spec
 - High-complexity agents (web search, multi-step reasoning) → should use `claude-sonnet-4-6`
 - Low-complexity agents (formatting, compiling) → should use `haiku`
 - Missing model → flag if it should be explicit
+
+### Scripts
+- Agent specs that describe scripts (py-dev) ↔ actual script behaviour on disk — flag drift
+- `scripts/requirements.txt` covers every import in `scripts/*.py`
+- No hardcoded machine-specific absolute paths
+- Error handling: no silent `except: pass`, meaningful stderr, correct exit codes
 
 ### Quality
 - Agent descriptions specific enough for accurate routing (vague = medium urgency)

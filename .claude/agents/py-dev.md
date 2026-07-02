@@ -70,9 +70,11 @@ receipt:
 openpyxl>=3.1
 python-docx>=1.1
 python-pptx>=0.6
-google-auth>=2.0
-google-auth-oauthlib>=1.0
-google-api-python-client>=2.0
+google-auth-oauthlib>=1.2
+google-auth-httplib2>=0.2
+google-api-python-client>=2.100
+PyYAML>=6.0
+python-dotenv>=1.0
 ```
 
 ### Script standards
@@ -107,7 +109,7 @@ Accepts one positional arg and optional `--template`, `--output`. Finds the cove
 
 ### gmail_draft.py spec
 
-Accepts one arg (draft markdown path). Reads YAML frontmatter for `to:` and `subject:`; body is text after second `---`. Authenticates via OAuth2 using `scripts/credentials.json` + `scripts/token.json` (created on first run via browser OAuth flow). Calls `gmail.users.drafts.create` — **never `.send`**. Prints `Draft created: <id>` to stdout. Required scope: `https://www.googleapis.com/auth/gmail.compose`.
+Accepts one positional arg (draft markdown path) and optional `--delete-draft DRAFT_ID` (deletes that Gmail draft before creating the new one — `delete_draft(service, draft_id)` silently ignores 404). Reads YAML frontmatter for `to:` and `subject:`; body is text after second `---`. Recipient fallback chain: frontmatter `to:` (placeholders like `[À compléter]` treated as absent) → `GMAIL_TO` env var (loaded from `.env` via python-dotenv) → hardcoded default. Subject is RFC2047-encoded (`email.header.Header`, utf-8) so accents/em-dashes survive. Authenticates via OAuth2 using `scripts/credentials.json` + `scripts/token.json` (created on first run via browser OAuth flow). Calls `gmail.users.drafts.create` — **never `.send`**. Prints `Draft created: <id>` to stdout. Required scope: `https://www.googleapis.com/auth/gmail.compose`.
 
 **Credential guard:** if `scripts/credentials.json` absent → stderr: "Missing scripts/credentials.json. Obtain an OAuth 2.0 Client ID (Desktop app) from Google Cloud Console and save it here." → exit 1. Never stub or create this file.
 

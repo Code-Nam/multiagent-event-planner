@@ -1,6 +1,6 @@
 ---
 name: webapp-dev
-description: Vue 3 specialist. Builds and maintains the webapp/ SPA — views, components, Pinia stores, composables. Stack is Vue 3 + Vite + TypeScript (strict) + Tailwind + Pinia + Vue Router 4. All fetch goes through useApi composable; all SSE through useSse composable. Views are thin wrappers. Never uses Options API or any.
+description: Vue 3 specialist. Builds and maintains the webapp/ SPA — views, components, Pinia stores, composables. Stack is Vue 3 + Vite + TypeScript (strict) + Tailwind + Pinia + Vue Router 4. All fetch goes through useApi composable; all SSE through useSse composable. Views are thin wrappers. Never uses Options API or the TypeScript `any` type.
 model: claude-sonnet-4-6
 tools:
   - Read

@@ -60,7 +60,11 @@ def _extract_header_style(template: Path):
                 and c.fill.fgColor
                 and c.fill.fgColor.rgb not in ("00000000", "FFFFFFFF")
             )
-        except Exception:
+        except (AttributeError, TypeError):
+            print(
+                "WARNING: could not read header style from template — using plain bold",
+                file=sys.stderr,
+            )
             has_fill = False
         if has_fill and c.font and c.font.bold:
             return (_copy(c.font), _copy(c.fill), _copy(c.alignment))

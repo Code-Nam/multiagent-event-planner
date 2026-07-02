@@ -70,6 +70,7 @@ receipt:
 openpyxl>=3.1
 python-docx>=1.1
 python-pptx>=0.6
+google-auth>=2.0
 google-auth-oauthlib>=1.2
 google-auth-httplib2>=0.2
 google-api-python-client>=2.100
